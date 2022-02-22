@@ -64,7 +64,8 @@ header
     display: flex;
     align-items: center;
     grid-area: menu;
-    background-color: brown;
+    border:1px solid black;
+    background-image: url(/images/menuBackground.jpg);
 }
 
 
@@ -97,14 +98,15 @@ header
     justify-content: center;
     padding:110px 0px;
     grid-area: table;
-    background-color: aquamarine;
+    background-image: url(/images/tableBackground.jpg);
 }
 
 .canvas
 {
     width: 780px;
     height: 780px;
-    background-color: cornflowerblue;
+    background-color: white;
+    border:10px solid black;
 }
 
 footer
