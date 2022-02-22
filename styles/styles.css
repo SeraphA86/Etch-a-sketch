@@ -13,7 +13,7 @@ body
 body
 {
     display: grid;
-    grid-template-columns: 300px auto;
+    grid-template-columns: 350px auto;
     grid-template-rows: auto auto auto;
     grid-template-areas:
     "header header"
@@ -61,10 +61,34 @@ header
 
 .menu
 {
+    display: flex;
+    align-items: center;
     grid-area: menu;
     background-color: brown;
 }
 
+
+.options
+{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    padding: 30px;
+    gap:5%;
+}
+
+.menuOtions
+{
+    width: 45%;
+    height: 75px;
+    margin-bottom: 30px;
+}
+
+.wideButton
+{
+    width: 95%;
+}
 
 .table
 {
