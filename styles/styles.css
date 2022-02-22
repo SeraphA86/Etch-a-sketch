@@ -5,6 +5,67 @@
     box-sizing: border-box;
 }
   
+body
+{
+    height:100vh;
+}
+
+body
+{
+    display: grid;
+    grid-template-columns: 300px auto;
+    grid-template-rows: auto 800px auto;
+    grid-template-areas:
+    "header header"
+    "menu table"
+    "footer footer";
+}
+
+header
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 48px;
+    grid-area: header;
+    background-color: blueviolet;
+    padding: 30px 0px;
+}
+
+.logoContainer
+{
+    display: flex;
+    align-items:center;
+    justify-content: center;
+}
+
+.logoImage
+{
+
+    background-color: black;
+    width: 100px;
+    height: 100px;
+}
+.menu
+{
+    grid-area: menu;
+    background-color: brown;
+}
+
+
+.table
+{
+    grid-area: table;
+    background-color: aquamarine;
+}
+
+footer
+{
+    grid-area: footer;
+    background-color: chartreuse;
+}
+
 /* Mobile Styles */
 @media only screen and (max-width: 400px)
 {
