@@ -109,7 +109,12 @@ header
 
 footer
 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     grid-area: footer;
+    padding: 25px;
     background-color: chartreuse;
 }
 
