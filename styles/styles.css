@@ -103,10 +103,16 @@ header
 
 .canvas
 {
+    display: grid;
     width: 780px;
     height: 780px;
     background-color: white;
     border:10px solid black;
+}
+
+.pixel
+{
+    border:0.5px solid black;
 }
 
 footer
