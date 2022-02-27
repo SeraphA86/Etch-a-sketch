@@ -6,7 +6,7 @@
         <title>Etch a sketch</title>
         <link rel='stylesheet' href='styles/styles.css'/>
     </head>
-    <body>
+    <body ondragstart="return false;" ondrop="return false;"><!--Disabling dragging (Random dragging of canvas grid elements may occur)-->
         <header>
             <div class="logo">
 
@@ -35,6 +35,7 @@
         </div>
 
         <div class="table">
+            <div id="indicator" data-down="0"></div>
             <div class="canvas">
 
             </div>
