@@ -1,16 +1,74 @@
-function randomizer(min, max)/*Selecting a random number in the range [min, max)*/
+function randomizer(min, max)/*Selecting a random number in the range [min, max).*/
 {
     return Math.floor(Math.random() * (max - min)) + min;
 }
+function rgbDataset(element,r,g,b)/*Writes the transmitted rgb values to the data-attributes of the DOM element.*/
+{
+    element.dataset.red = r;
+    element.dataset.green = g;
+    element.dataset.blue = b;
+}
 
-function colorGenerator()
+function colorGenerator(element)/*Generates random rgb values, then changes the color of the DOM element with them 
+                                  and writes them to the data-attributes of the DOM element.*/
 {
     let r,g,b, color;
     r = randomizer(0, 256);
     g = randomizer(0, 256);
     b = randomizer(0, 256);
-    color = `rgb(${r}, ${g} ,${b})`;
+    element.dataset.red = r;
+    element.dataset.green = g;
+    element.dataset.blue = b;
+    element.style.backgroundColor = `rgb(${r}, ${g} ,${b})`;
     return color;
+}
+
+function checkBoundaries(element)/*Checks if the rgb values have gone beyond the boundaries of [0, 255].*/
+{
+    if(element < 0)
+    {
+        return 0;
+    }
+    else if(element > 255)
+    {
+        return 255;
+    }
+
+    else
+    {
+        return element;
+    }
+}
+
+function changingLighting(mode, element)/*Illuminates or darkens the element (adding or subtracting 10 from the values of r, g, b)
+                                          depending on the mode and writes the resulting rgb values to the element's attribute-data.*/
+{
+    let r,g,b;
+    r = Number(element.dataset.red);
+    g = Number(element.dataset.green);
+    b = Number(element.dataset.blue);
+    if(mode == 'lightening')
+    {
+        r += 10;
+        g += 10;
+        b += 10;
+        
+    }
+
+    if(mode == 'shadow')
+    {
+        r -= 10;
+        g -= 10;
+        b -= 10;
+    }
+
+    r = checkBoundaries(r);
+    g = checkBoundaries(g);
+    b = checkBoundaries(b);
+
+    rgbDataset(element, r, g, b)
+
+    element.style.backgroundColor = `rgb(${r}, ${g} ,${b})`;
 }
 
 /* The function uses CSS Grid to create a grid in the selected element.
@@ -24,7 +82,7 @@ function gridCreator(size, element, canvas)
     canvas.style.gridTemplateRows = `repeat(${size}, 1fr)`;/*Creating fixed-height rows.*/
 
     let container = '';/*A container string that will contain all the created grid elements (all elements are added to the string
-                        , and then inserted into the desired HTML element using innerHTML in order to improve performance)*/
+                        , and then inserted into the desired HTML element using innerHTML in order to improve performance).*/
 
     for(let i = 0; i < size * size; i++)
     {
@@ -57,16 +115,31 @@ function changeColor(color, elements)
     {    button.addEventListener('mouseover', ()=>
         {
  
-            if(down.dataset.down == '1')
+            if(down.dataset.down == '1')/*Determines whether the mouse button is being held down.*/
             {
-                if(document.querySelector('#indicator').dataset.randomColor != '1')
+                if(down.dataset.illumination != 'none')/*Determines whether at least one of the lighting change buttons has been pressed.*/
                 {
-                    button.style.backgroundColor = document.querySelector('#indicator').style.backgroundColor;
+                    if(down.dataset.illumination == 'lightening')
+                    {
+                        changingLighting('lightening', button);
+                    }
+                    else
+                    {
+                        changingLighting('shadow', button);
+                    }
                 }
                 else
                 {
-                    button.style.backgroundColor = colorGenerator();/*With each pass of the mouse, it changes the color of the grid element 
-                                                                      to a completely random RGB value.*/
+                    if(down.dataset.randomColor != '1')/*Determines whether the 'Draw with random color' button has been pressed.*/
+                    {
+                        button.style.backgroundColor = down.style.backgroundColor;
+                        rgbDataset(button,down.dataset.red, down.dataset.green, down.dataset.blue)
+                    }
+                    else
+                    {
+                        colorGenerator(button);/*With each pass of the mouse, it changes the color of the grid element 
+                                                                        to a completely random RGB value.*/
+                    }
                 }
             }
         });
@@ -77,12 +150,14 @@ const canvas = document.querySelector('.canvas');/*The element in which the grid
 const body = document.querySelector('body');
 const pencil = document.querySelector('.pencil')
 const eraser = document.querySelector('.eraser');
+const lightening = document.querySelector('.lightening');
+const shadow = document.querySelector('.shadow');
 const rainbow = document.querySelector('.rainbow');
-let gridElement = `<div class='pixel'></div>`;/*A single element of the grid.*/
+let gridElement = `<div class='pixel' data-red="255" data-green="255" data-blue="255" '></div>`;/*A single element of the grid.*/
 
 /*Initial initialization of the grid.*/
 gridCreator(8, gridElement, canvas);
-changeColor('black', document.querySelectorAll('.pixel'));
+changeColor(`rgb(0, 0 ,0)`, document.querySelectorAll('.pixel'));
 
 const gridElementsContainer = document.querySelectorAll('.pixel');/*NodeList containing all grid elements.*/
 
@@ -94,23 +169,45 @@ which is then referenced by the color-changing function.*/
 Instructs the color change function to use random colors.*/
 rainbow.addEventListener('click', ()=>
 {
+    document.querySelector('#indicator').dataset.illumination = 'none';
     document.querySelector('#indicator').dataset.randomColor = '1';
 });
 
-/*An event that changes the color of the drawing.Changes the fill color of the grid element.
-Specifies the color change function not to use random colors.*/
+/*An event that changes the color of the drawing.
+Changes the fill color of the grid element.
+Indicates the color-change function not to use random colors.
+Sets the rgb values in the data-attribute of the indicator for the subsequent possible lightening/darkening of the grid element.*/
 pencil.addEventListener('click', ()=>
 {
+    rgbDataset(document.querySelector('#indicator'), '0', '0', '0');
+    document.querySelector('#indicator').dataset.illumination = 'none';
     document.querySelector('#indicator').dataset.randomColor = '0';
-    document.querySelector('#indicator').style.backgroundColor = 'black';
+    document.querySelector('#indicator').style.backgroundColor = 'rgb(0, 0, 0)';
 });
 /*An event that changes the color of the drawing.
 Changes the fill color of the grid element to the color of the canvas.
-Specifies the color change function not to use random colors.*/
+Indicates the color-change function not to use random colors.
+Sets the rgb values in the data-attribute of the indicator for the subsequent possible lightening/darkening of the grid element.*/
 eraser.addEventListener('click', ()=>
 {
+    rgbDataset(document.querySelector('#indicator'), '255', '255', '255');
+    document.querySelector('#indicator').dataset.illumination = 'none';
     document.querySelector('#indicator').dataset.randomColor = '0';
-    document.querySelector('#indicator').style.backgroundColor = 'white';
+    document.querySelector('#indicator').style.backgroundColor = 'rgb(255, 255, 255)';
+});
+
+/*Changes the data-attribute illumination to 'lightening',
+that specifies the color-changing functions to 'lighten' the element by adding to rgb 10.*/
+lightening.addEventListener('click', ()=>
+{
+    document.querySelector('#indicator').dataset.illumination = 'lightening';
+});
+
+/*Changes the data-attribute illumination to 'shadow',
+that specifies the color-changing functions to 'dimming' the element by subtractions from rgb 10.*/
+shadow.addEventListener('click', ()=>
+{
+    document.querySelector('#indicator').dataset.illumination = 'shadow';
 });
 
 /*Changing the value of the indicator when the mouse button is released.*/
@@ -126,7 +223,17 @@ gridElementsContainer.forEach((button)=>
     button.addEventListener('mousedown', ()=>
     {
         down.dataset.down = '1';
-        button.style.backgroundColor = down.style.backgroundColor;/*The color of the grid element when pressed.*/
+        if(down.dataset.illumination == 'none')/*Determines whether at least one of the lighting change buttons has been pressed.*/
+        {
+            if(down.dataset.randomColor != '1')/*Determines whether the 'Draw with random color' button has been pressed.*/
+            {
+                button.style.backgroundColor = down.style.backgroundColor;/*The color of the grid element when pressed.*/
+            }
+            else
+            {
+                colorGenerator(button);
+            }
+        }
     });
 
 });
