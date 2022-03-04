@@ -153,6 +153,7 @@ const eraser = document.querySelector('.eraser');
 const lightening = document.querySelector('.lightening');
 const shadow = document.querySelector('.shadow');
 const rainbow = document.querySelector('.rainbow');
+const gridBorder = document.querySelector('.grid');
 let gridElement = `<div class='pixel' data-red="255" data-green="255" data-blue="255" '></div>`;/*A single element of the grid.*/
 
 /*Initial initialization of the grid.*/
@@ -208,6 +209,22 @@ that specifies the color-changing functions to 'dimming' the element by subtract
 shadow.addEventListener('click', ()=>
 {
     document.querySelector('#indicator').dataset.illumination = 'shadow';
+});
+
+/*Disables/enables the display of the canvas grid
+by changing the 'background-color' and 'gap' values of the  DOM element 'canvas'.*/
+gridBorder.addEventListener('click', ()=>
+{
+    if(canvas.style.backgroundColor == 'black')
+    {
+        canvas.style.backgroundColor = 'white';
+        canvas.style.gap = '0px';    
+    }
+    else
+    {
+        canvas.style.backgroundColor = 'black';
+        canvas.style.gap = '2px'; 
+    }
 });
 
 /*Changing the value of the indicator when the mouse button is released.*/
