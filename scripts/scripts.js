@@ -71,6 +71,31 @@ function changingLighting(mode, element)/*Illuminates or darkens the element (ad
     element.style.backgroundColor = `rgb(${r}, ${g} ,${b})`;
 }
 
+function checkInput(input)
+{
+    console.log(input == input, input);
+    if(typeof(input) === 'number' && !isNaN(input))
+    {
+        if(input > 100)
+        {
+            return 100;
+        }
+        if(input < 1)
+        {
+            return 8;
+        }
+        else
+        {
+            return input;
+        }
+    }
+    else
+    {
+        console.log(1);
+        return 8;
+    }
+}
+
 /* The function uses CSS Grid to create a grid in the selected element.
 The function accepts: 
     -size(the size of the grid (AxA)),
@@ -92,6 +117,29 @@ function gridCreator(size, element, canvas)
     canvas.innerHTML += container;
 }
 
+/*Changing the indicator when pressing on grid elements.*/
+function pressing(elements)
+{
+    elements.forEach((button)=>
+    {
+        let down = document.querySelector('#indicator');
+        button.addEventListener('mousedown', ()=>
+        {
+            down.dataset.down = '1';
+            if(down.dataset.illumination == 'none')/*Determines whether at least one of the lighting change buttons has been pressed.*/
+            {
+                if(down.dataset.randomColor != '1')/*Determines whether the 'Draw with random color' button has been pressed.*/
+                {
+                    button.style.backgroundColor = down.style.backgroundColor;/*The color of the grid element when pressed.*/
+                }
+                else
+                {
+                    colorGenerator(button);
+                }
+            }
+        });
+    });
+}
 
 /*In the document <div id="indicator" data-down=X></div>
 , the element acts as an indicator of pressing/releasing the mouse button,
@@ -154,10 +202,14 @@ const lightening = document.querySelector('.lightening');
 const shadow = document.querySelector('.shadow');
 const rainbow = document.querySelector('.rainbow');
 const gridBorder = document.querySelector('.grid');
+const gridSize = document.querySelector('.gridSize');
+const gridForm = document.querySelector('.gridForm');
+const text = document.querySelector("input");
+let size = 8;
 let gridElement = `<div class='pixel' data-red="255" data-green="255" data-blue="255" '></div>`;/*A single element of the grid.*/
 
 /*Initial initialization of the grid.*/
-gridCreator(8, gridElement, canvas);
+gridCreator(size, gridElement, canvas);
 changeColor(`rgb(0, 0 ,0)`, document.querySelectorAll('.pixel'));
 
 const gridElementsContainer = document.querySelectorAll('.pixel');/*NodeList containing all grid elements.*/
@@ -230,27 +282,29 @@ gridBorder.addEventListener('click', ()=>
 /*Changing the value of the indicator when the mouse button is released.*/
 body.addEventListener('mouseup', ()=>
 {
+    text.value = `${size}x${size}`;
     document.querySelector('#indicator').dataset.down = '0';
 });
 
-/*Changing the indicator when pressing on grid elements.*/
-gridElementsContainer.forEach((button)=>
-{   
-    let down = document.querySelector('#indicator');
-    button.addEventListener('mousedown', ()=>
-    {
-        down.dataset.down = '1';
-        if(down.dataset.illumination == 'none')/*Determines whether at least one of the lighting change buttons has been pressed.*/
-        {
-            if(down.dataset.randomColor != '1')/*Determines whether the 'Draw with random color' button has been pressed.*/
-            {
-                button.style.backgroundColor = down.style.backgroundColor;/*The color of the grid element when pressed.*/
-            }
-            else
-            {
-                colorGenerator(button);
-            }
-        }
-    });
+pressing(gridElementsContainer);
 
+gridSize.addEventListener('click',()=>
+{
+    text.value = '';
+});
+
+text.addEventListener('keydown', (e)=>
+{
+    console.log(e.code);
+    if(e.code == 'Enter')
+    {
+        e.preventDefault();
+        size = checkInput(Number(text.value));
+        text.value = `${size}x${size}`;
+        canvas.innerHTML = '';
+        gridCreator(size, gridElement, canvas);
+        console.log(document.querySelectorAll('.pixel'));
+        changeColor(`rgb(0, 0 ,0)`, document.querySelectorAll('.pixel'));
+        pressing(document.querySelectorAll('.pixel'));
+    }
 });
